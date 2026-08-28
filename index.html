@@ -331,18 +331,58 @@
   .files-btn:hover{ background: rgba(169,118,47,0.2); }
   .files-none{ color: var(--ink-soft); font-size: 12px; }
 
-  .row-actions{ display:flex; align-items:center; gap: 4px; justify-content:flex-end; }
-  .del-btn{
+  .row-actions{ display:flex; align-items:center; gap: 2px; justify-content:flex-end; }
+  .edit-btn, .del-btn{
     background: none;
     border: none;
     color: var(--ink-soft);
     cursor: pointer;
-    font-size: 16px;
     line-height: 1;
-    padding: 4px 6px;
+    padding: 5px 6px;
     border-radius: 5px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
   }
+  .edit-btn:hover{ color: var(--verdigris); background: rgba(75,107,98,0.1); }
+  .del-btn{ font-size: 16px; }
   .del-btn:hover{ color: var(--danger); background: rgba(166,67,47,0.08); }
+
+  .panel.editing{
+    border-color: var(--verdigris);
+    box-shadow: 0 0 0 3px rgba(75,107,98,0.08);
+  }
+  .editing-tag{
+    display:none;
+    align-items:center;
+    gap: 6px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--verdigris);
+    background: rgba(75,107,98,0.1);
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-left: 10px;
+  }
+  .panel.editing .editing-tag{ display:inline-flex; }
+
+  .cancel-edit-btn{
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-family:'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 9px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+    margin-right: 8px;
+    display:none;
+  }
+  .cancel-edit-btn.show{ display:inline-flex; }
+  .cancel-edit-btn:hover{ background: rgba(0,0,0,0.03); }
 
   .empty-state{
     padding: 48px 24px;
@@ -561,8 +601,8 @@
     </div>
   </div>
 
-  <div class="panel">
-    <h2>Log a purchase</h2>
+  <div class="panel" id="entryPanel">
+    <h2 id="panelHeading">Log a purchase <span class="editing-tag" id="editingTag">✎ Editing</span></h2>
     <form class="entry-form" id="entryForm">
       <div class="field">
         <label for="itemName">Item</label>
@@ -615,6 +655,7 @@
       </div>
 
       <div class="form-actions">
+        <button type="button" class="cancel-edit-btn" id="cancelEditBtn">Cancel</button>
         <button type="submit" class="add-btn" id="submitBtn">+ Add purchase</button>
       </div>
     </form>
@@ -707,7 +748,8 @@
   }
 
   let purchases = loadPurchases();
-  let pendingFiles = []; // attachments staged for the entry currently being added
+  let pendingFiles = []; // attachments staged for the entry currently being added/edited
+  let editingId = null; // set when editing an existing entry
 
   const form = document.getElementById('entryForm');
   const itemName = document.getElementById('itemName');
@@ -724,6 +766,8 @@
   const emptyState = document.getElementById('emptyState');
   const ledgerTable = document.getElementById('ledgerTable');
   const submitBtn = document.getElementById('submitBtn');
+  const cancelEditBtn = document.getElementById('cancelEditBtn');
+  const entryPanel = document.getElementById('entryPanel');
   const modalOverlay = document.getElementById('modalOverlay');
   const modalBody = document.getElementById('modalBody');
   const modalTitle = document.getElementById('modalTitle');
@@ -929,6 +973,9 @@
         }</td>
         <td data-label="">
           <div class="row-actions">
+            <button class="edit-btn" title="Edit" data-edit="${p.id}">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+            </button>
             <button class="del-btn" title="Delete" data-id="${p.id}">×</button>
           </div>
         </td>
@@ -937,6 +984,7 @@
 
     ledgerBody.querySelectorAll('.del-btn').forEach(btn => {
       btn.addEventListener('click', () => {
+        if(editingId === btn.dataset.id) exitEditMode();
         purchases = purchases.filter(p => p.id !== btn.dataset.id);
         savePurchases(purchases);
         render();
@@ -946,34 +994,38 @@
     ledgerBody.querySelectorAll('.files-btn').forEach(btn => {
       btn.addEventListener('click', () => openAttachmentsModal(btn.dataset.view));
     });
+
+    ledgerBody.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.addEventListener('click', () => enterEditMode(btn.dataset.edit));
+    });
   }
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Saving…';
+  function enterEditMode(id){
+    const p = purchases.find(x => x.id === id);
+    if(!p) return;
 
-    const entry = {
-      id: uid(),
-      item: itemName.value.trim(),
-      price: parseFloat(itemPrice.value) || 0,
-      currency: itemCurrency.value,
-      date: itemDate.value,
-      category: itemCategory.value.trim(),
-      files: pendingFiles.slice()
-    };
+    editingId = id;
+    itemName.value = p.item;
+    itemPrice.value = p.price;
+    itemCurrency.value = p.currency || 'USD';
+    itemDate.value = p.date;
+    itemCategory.value = p.category || '';
+    pendingFiles = (p.files || []).slice();
+    renderPendingChips();
 
-    submitBtn.disabled = false;
+    entryPanel.classList.add('editing');
+    submitBtn.textContent = 'Save changes';
+    cancelEditBtn.classList.add('show');
+
+    entryPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    itemName.focus();
+  }
+
+  function exitEditMode(){
+    editingId = null;
+    entryPanel.classList.remove('editing');
     submitBtn.textContent = '+ Add purchase';
-
-    if(!entry.item || !entry.date) return;
-
-    purchases.push(entry);
-    const ok = savePurchases(purchases);
-    if(!ok){
-      purchases.pop();
-      return;
-    }
+    cancelEditBtn.classList.remove('show');
 
     itemName.value = '';
     itemPrice.value = '';
@@ -982,7 +1034,53 @@
     pendingFiles = [];
     renderPendingChips();
     itemFiles.value = '';
-    itemName.focus();
+  }
+
+  cancelEditBtn.addEventListener('click', exitEditMode);
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const item = itemName.value.trim();
+    const date = itemDate.value;
+    if(!item || !date) return;
+
+    submitBtn.disabled = true;
+    const savingLabel = editingId ? 'Saving…' : 'Saving…';
+    const restoreLabel = editingId ? 'Save changes' : '+ Add purchase';
+    submitBtn.textContent = savingLabel;
+
+    const entryData = {
+      item,
+      price: parseFloat(itemPrice.value) || 0,
+      currency: itemCurrency.value,
+      date,
+      category: itemCategory.value.trim(),
+      files: pendingFiles.slice()
+    };
+
+    let ok;
+    if(editingId){
+      const idx = purchases.findIndex(p => p.id === editingId);
+      if(idx === -1){ submitBtn.disabled = false; submitBtn.textContent = restoreLabel; return; }
+      const previous = purchases[idx];
+      purchases[idx] = { ...previous, ...entryData };
+      ok = savePurchases(purchases);
+      if(!ok) purchases[idx] = previous;
+    } else {
+      const entry = { id: uid(), ...entryData };
+      purchases.push(entry);
+      ok = savePurchases(purchases);
+      if(!ok) purchases.pop();
+    }
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = restoreLabel;
+    if(!ok) return;
+
+    const wasEditing = !!editingId;
+    exitEditMode();
+    if(!wasEditing) itemName.focus();
 
     render();
   });
