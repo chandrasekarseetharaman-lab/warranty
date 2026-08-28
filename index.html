@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Household Ledger — Major Purchase Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #F1EEE4;
+    --paper-card: #FBF9F3;
+    --ink: #23282E;
+    --ink-soft: #6B7178;
+    --brass: #A9762F;
+    --brass-light: #C9A063;
+    --verdigris: #4B6B62;
+    --line: #DBD5C6;
+    --danger: #A6432F;
+    --radius: 10px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  .wrap{
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* ---- Nameplate / signature header ---- */
+  .nameplate{
+    position: relative;
+    background: linear-gradient(155deg, #2B3038 0%, #1C2025 100%);
+    color: #F1EEE4;
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 12px 24px -12px rgba(0,0,0,0.4);
+    overflow: hidden;
+  }
+  .nameplate::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image: radial-gradient(circle at 18px 18px, rgba(255,255,255,0.05) 1.5px, transparent 1.5px);
+    background-size: 22px 22px;
+    opacity: 0.5;
+    pointer-events:none;
+  }
+  .nameplate-top{
+    display:flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    position: relative;
+  }
+  .nameplate-eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brass-light);
+    margin: 0 0 6px;
+  }
+  .nameplate h1{
+    font-family:'Fraunces', serif;
+    font-weight: 600;
+    font-size: 30px;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .rivet{
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #E4CB9A, var(--brass) 70%);
+  }
+  .rivets{ display:flex; gap:6px; }
+
+  .nameplate-stats{
+    display:flex;
+    gap: 36px;
+    margin-top: 22px;
+    position: relative;
+    flex-wrap: wrap;
+  }
+  .stat .stat-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(241,238,228,0.55);
+    margin-bottom: 4px;
+  }
+  .stat .stat-value{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 26px;
+    font-weight: 500;
+    color: #F1EEE4;
+  }
+  .stat .stat-value.brass{ color: var(--brass-light); }
+
+  /* ---- Add purchase panel ---- */
+  .panel{
+    background: var(--paper-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 22px;
+  }
+  .panel h2{
+    font-family:'Fraunces', serif;
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0 0 16px;
+    display:flex;
+    align-items:center;
+    gap: 8px;
+  }
+  .panel h2::before{
+    content:"";
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--verdigris);
+    display:inline-block;
+  }
+
+  form.entry-form{
+    display:grid;
+    grid-template-columns: 2fr 1fr 1fr 1.2fr auto;
+    gap: 12px;
+    align-items: end;
+  }
+  .field{ display:flex; flex-direction:column; gap:6px; }
+  .field label{
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  .field input, .field select{
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: #fff;
+    color: var(--ink);
+  }
+  .field input:focus, .field select:focus, button:focus-visible{
+    outline: 2px solid var(--verdigris);
+    outline-offset: 1px;
+  }
+
+  button.add-btn{
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 7px;
+    background: var(--ink);
+    color: var(--paper);
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+    white-space: nowrap;
+  }
+  button.add-btn:hover{ background: #34393F; }
+  button.add-btn:active{ transform: scale(0.98); }
+
+  /* ---- Controls row ---- */
+  .controls{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .controls .field{ flex-direction: row; align-items: center; gap: 8px; }
+  .controls label{ font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); font-weight: 600; }
+  .controls select{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    padding: 6px 8px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--ink);
+  }
+
+  /* ---- Ledger table ---- */
+  .ledger{
+    background: var(--paper-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  table{
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead th{
+    text-align: left;
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 600;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(0,0,0,0.02);
+  }
+  th.num, td.num{ text-align: right; }
+  tbody td{
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+    vertical-align: middle;
+  }
+  tbody tr:last-child td{ border-bottom: none; }
+  tbody tr:hover{ background: rgba(75,107,98,0.05); }
+
+  .item-name{ font-weight: 600; }
+  .price-cell{ font-family: 'IBM Plex Mono', monospace; font-weight: 500; }
+  .date-cell{ font-family: 'IBM Plex Mono', monospace; color: var(--ink-soft); font-size: 13px; }
+
+  .chip{
+    display:inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    background: rgba(75,107,98,0.12);
+    color: var(--verdigris);
+    letter-spacing: 0.02em;
+  }
+
+  .del-btn{
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 4px 6px;
+    border-radius: 5px;
+  }
+  .del-btn:hover{ color: var(--danger); background: rgba(166,67,47,0.08); }
+
+  .empty-state{
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--ink-soft);
+  }
+  .empty-state p{ margin: 4px 0; font-size: 14px; }
+  .empty-state .big{
+    font-family:'Fraunces', serif;
+    font-size: 18px;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  footer{
+    text-align:center;
+    margin-top: 28px;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 700px){
+    form.entry-form{ grid-template-columns: 1fr 1fr; }
+    form.entry-form button.add-btn{ grid-column: 1 / -1; }
+    thead{ display:none; }
+    table, tbody, tr, td{ display:block; width:100%; }
+    tbody tr{ padding: 12px 16px; border-bottom: 1px solid var(--line); }
+    tbody td{ border:none; padding: 3px 0; display:flex; justify-content:space-between; }
+    tbody td.num{ text-align:left; }
+    tbody td::before{ content: attr(data-label); font-size:10.5px; text-transform:uppercase; letter-spacing:0.08em; color: var(--ink-soft); font-weight:600; }
+    .nameplate-stats{ gap: 20px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="nameplate">
+    <div class="nameplate-top">
+      <div>
+        <p class="nameplate-eyebrow">Model No. HL-01 · Personal Asset Log</p>
+        <h1>Household Ledger</h1>
+      </div>
+      <div class="rivets">
+        <div class="rivet"></div><div class="rivet"></div><div class="rivet"></div>
+      </div>
+    </div>
+    <div class="nameplate-stats">
+      <div class="stat">
+        <div class="stat-label">Total value</div>
+        <div class="stat-value brass" id="statTotal">$0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Items logged</div>
+        <div class="stat-value" id="statCount">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Avg. purchase</div>
+        <div class="stat-value" id="statAvg">$0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Log a purchase</h2>
+    <form class="entry-form" id="entryForm">
+      <div class="field">
+        <label for="itemName">Item</label>
+        <input type="text" id="itemName" placeholder="e.g. Samsung 55&quot; TV" required>
+      </div>
+      <div class="field">
+        <label for="itemPrice">Price</label>
+        <input type="number" id="itemPrice" placeholder="0.00" min="0" step="0.01" required>
+      </div>
+      <div class="field">
+        <label for="itemDate">Date</label>
+        <input type="date" id="itemDate" required>
+      </div>
+      <div class="field">
+        <label for="itemCategory">Category</label>
+        <input type="text" id="itemCategory" list="categoryOptions" placeholder="Electronics">
+        <datalist id="categoryOptions">
+          <option value="Electronics">
+          <option value="Appliances">
+          <option value="Furniture">
+          <option value="Vehicle">
+          <option value="Home Improvement">
+          <option value="Other">
+        </datalist>
+      </div>
+      <button type="submit" class="add-btn">+ Add purchase</button>
+    </form>
+  </div>
+
+  <div class="controls">
+    <div class="field">
+      <label for="filterCategory">Filter</label>
+      <select id="filterCategory">
+        <option value="">All categories</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="sortOrder">Sort</label>
+      <select id="sortOrder">
+        <option value="date-desc">Newest first</option>
+        <option value="date-asc">Oldest first</option>
+        <option value="price-desc">Price: high to low</option>
+        <option value="price-asc">Price: low to high</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="ledger">
+    <table id="ledgerTable">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Category</th>
+          <th>Date</th>
+          <th class="num">Price</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="ledgerBody"></tbody>
+    </table>
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <p class="big">No purchases logged yet</p>
+      <p>Add your first major purchase above — it'll show up here.</p>
+    </div>
+  </div>
+
+  <footer>Stored only in this browser. Clearing site data will erase your log.</footer>
+</div>
+
+<script>
+  const STORAGE_KEY = 'household-ledger-purchases-v1';
+
+  function loadPurchases(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    }catch(e){
+      console.error('Failed to load purchases', e);
+      return [];
+    }
+  }
+
+  function savePurchases(list){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    }catch(e){
+      console.error('Failed to save purchases', e);
+      alert('Could not save — your browser storage may be full or disabled.');
+    }
+  }
+
+  let purchases = loadPurchases();
+
+  const form = document.getElementById('entryForm');
+  const itemName = document.getElementById('itemName');
+  const itemPrice = document.getElementById('itemPrice');
+  const itemDate = document.getElementById('itemDate');
+  const itemCategory = document.getElementById('itemCategory');
+  const filterCategory = document.getElementById('filterCategory');
+  const sortOrder = document.getElementById('sortOrder');
+  const ledgerBody = document.getElementById('ledgerBody');
+  const emptyState = document.getElementById('emptyState');
+  const ledgerTable = document.getElementById('ledgerTable');
+
+  // default date to today
+  itemDate.valueAsDate = new Date();
+
+  function fmtMoney(n){
+    return '$' + Number(n).toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:2});
+  }
+
+  function fmtDate(iso){
+    const d = new Date(iso + 'T00:00:00');
+    return d.toLocaleDateString(undefined, {year:'numeric', month:'short', day:'numeric'});
+  }
+
+  function uid(){
+    return Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+  }
+
+  function refreshCategoryFilter(){
+    const current = filterCategory.value;
+    const cats = Array.from(new Set(purchases.map(p => p.category).filter(Boolean))).sort();
+    filterCategory.innerHTML = '<option value="">All categories</option>' +
+      cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    if(cats.includes(current)) filterCategory.value = current;
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function computeStats(list){
+    const total = list.reduce((sum, p) => sum + Number(p.price || 0), 0);
+    const count = list.length;
+    const avg = count ? total / count : 0;
+    document.getElementById('statTotal').textContent = fmtMoney(total);
+    document.getElementById('statCount').textContent = count;
+    document.getElementById('statAvg').textContent = fmtMoney(avg);
+  }
+
+  function render(){
+    refreshCategoryFilter();
+
+    let list = [...purchases];
+
+    if(filterCategory.value){
+      list = list.filter(p => p.category === filterCategory.value);
+    }
+
+    switch(sortOrder.value){
+      case 'date-asc': list.sort((a,b) => a.date.localeCompare(b.date)); break;
+      case 'price-desc': list.sort((a,b) => b.price - a.price); break;
+      case 'price-asc': list.sort((a,b) => a.price - b.price); break;
+      default: list.sort((a,b) => b.date.localeCompare(a.date)); // date-desc
+    }
+
+    computeStats(purchases); // stats always reflect everything, not just filtered view
+
+    if(list.length === 0){
+      ledgerTable.style.display = 'none';
+      emptyState.style.display = 'block';
+      return;
+    }
+    ledgerTable.style.display = 'table';
+    emptyState.style.display = 'none';
+
+    ledgerBody.innerHTML = list.map(p => `
+      <tr>
+        <td class="item-name" data-label="Item">${escapeHtml(p.item)}</td>
+        <td data-label="Category">${p.category ? `<span class="chip">${escapeHtml(p.category)}</span>` : ''}</td>
+        <td class="date-cell" data-label="Date">${fmtDate(p.date)}</td>
+        <td class="num price-cell" data-label="Price">${fmtMoney(p.price)}</td>
+        <td data-label=""><button class="del-btn" title="Delete" data-id="${p.id}">×</button></td>
+      </tr>
+    `).join('');
+
+    ledgerBody.querySelectorAll('.del-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        purchases = purchases.filter(p => p.id !== btn.dataset.id);
+        savePurchases(purchases);
+        render();
+      });
+    });
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const entry = {
+      id: uid(),
+      item: itemName.value.trim(),
+      price: parseFloat(itemPrice.value) || 0,
+      date: itemDate.value,
+      category: itemCategory.value.trim()
+    };
+    if(!entry.item || !entry.date) return;
+
+    purchases.push(entry);
+    savePurchases(purchases);
+
+    itemName.value = '';
+    itemPrice.value = '';
+    itemCategory.value = '';
+    itemDate.valueAsDate = new Date();
+    itemName.focus();
+
+    render();
+  });
+
+  filterCategory.addEventListener('change', render);
+  sortOrder.addEventListener('change', render);
+
+  render();
+</script>
+</body>
+</html>
