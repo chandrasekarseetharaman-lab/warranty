@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Household Ledger — Major Purchase Tracker</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1C2025">
+<meta name="theme-color" content="#0B0F0C">
 <link rel="icon" href="icons/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
@@ -17,15 +17,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper: #F1EEE4;
-    --paper-card: #FBF9F3;
-    --ink: #23282E;
-    --ink-soft: #6B7178;
-    --brass: #A9762F;
-    --brass-light: #C9A063;
-    --verdigris: #4B6B62;
-    --line: #DBD5C6;
-    --danger: #A6432F;
+    --paper: #070A08;
+    --paper-card: #10140F;
+    --ink: #E9F5EE;
+    --ink-soft: #87A497;
+    --brass: #33C17A;
+    --brass-light: #8FEFC0;
+    --verdigris: #1E8F55;
+    --line: #1E2A22;
+    --danger: #FF6161;
     --radius: 10px;
   }
 
@@ -49,8 +49,8 @@
   /* ---- Nameplate / signature header ---- */
   .nameplate{
     position: relative;
-    background: linear-gradient(155deg, #2B3038 0%, #1C2025 100%);
-    color: #F1EEE4;
+    background: linear-gradient(155deg, #16211A 0%, #070A08 100%);
+    color: var(--ink);
     border-radius: 14px;
     padding: 28px 32px;
     margin-bottom: 28px;
@@ -91,7 +91,7 @@
   .rivet{
     width: 8px; height: 8px;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #E4CB9A, var(--brass) 70%);
+    background: radial-gradient(circle at 35% 30%, var(--brass-light), var(--brass) 70%);
   }
   .rivets{ display:flex; gap:6px; }
 
@@ -107,14 +107,14 @@
     font-size: 10.5px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(241,238,228,0.55);
+    color: rgba(233,245,238,0.55);
     margin-bottom: 4px;
   }
   .stat .stat-value{
     font-family:'IBM Plex Mono', monospace;
     font-size: 24px;
     font-weight: 500;
-    color: #F1EEE4;
+    color: var(--ink);
     display:flex;
     flex-wrap: wrap;
     gap: 4px 10px;
@@ -125,7 +125,7 @@
   .stat .stat-value .cur-part:not(:last-child)::after{
     content: "+";
     margin-left: 10px;
-    color: rgba(241,238,228,0.35);
+    color: rgba(233,245,238,0.35);
     font-size: 16px;
   }
 
@@ -173,7 +173,7 @@
     padding: 9px 10px;
     border: 1px solid var(--line);
     border-radius: 7px;
-    background: #fff;
+    background: var(--paper-card);
     color: var(--ink);
     width: 100%;
   }
@@ -190,13 +190,13 @@
     border: 1.5px dashed var(--line);
     border-radius: 8px;
     padding: 12px 14px;
-    background: rgba(75,107,98,0.03);
+    background: rgba(30,143,85,0.03);
     cursor: pointer;
     transition: border-color 0.15s ease, background 0.15s ease;
   }
   .file-drop:hover, .file-drop.dragover{
     border-color: var(--verdigris);
-    background: rgba(75,107,98,0.07);
+    background: rgba(30,143,85,0.07);
   }
   .file-drop svg{ flex-shrink:0; color: var(--verdigris); }
   .file-drop-text{ font-size: 13px; color: var(--ink-soft); }
@@ -214,7 +214,7 @@
     gap: 5px;
     font-size: 12px;
     font-family: 'IBM Plex Mono', monospace;
-    background: rgba(169,118,47,0.12);
+    background: rgba(51,193,122,0.12);
     color: var(--brass);
     padding: 4px 9px 4px 10px;
     border-radius: 20px;
@@ -237,13 +237,13 @@
     padding: 10px 20px;
     border: none;
     border-radius: 7px;
-    background: var(--ink);
-    color: var(--paper);
+    background: var(--brass);
+    color: #04120A;
     cursor: pointer;
     transition: background 0.15s ease, transform 0.1s ease;
     white-space: nowrap;
   }
-  button.add-btn:hover{ background: #34393F; }
+  button.add-btn:hover{ background: var(--brass-light); }
   button.add-btn:active{ transform: scale(0.98); }
   button.add-btn:disabled{ opacity: 0.6; cursor: wait; }
 
@@ -256,6 +256,8 @@
     margin-bottom: 10px;
     flex-wrap: wrap;
   }
+  .controls-left{ display:flex; align-items:center; gap: 18px; flex-wrap: wrap; }
+  .controls-right{ display:flex; align-items:center; gap: 8px; flex-wrap: wrap; }
   .controls .field{ flex-direction: row; align-items: center; gap: 8px; }
   .controls label{ font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); font-weight: 600; }
   .controls select{
@@ -264,9 +266,46 @@
     padding: 6px 8px;
     border: 1px solid var(--line);
     border-radius: 6px;
-    background: #fff;
+    background: var(--paper-card);
     color: var(--ink);
   }
+
+  .toolbar-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size:12.5px;
+    padding:7px 12px;
+    border-radius:7px;
+    border:1px solid var(--line);
+    background: var(--paper-card);
+    color: var(--ink-soft);
+    cursor:pointer;
+    text-decoration:none;
+  }
+  .toolbar-btn:hover{ border-color: var(--verdigris); color: var(--verdigris); background: rgba(30,143,85,0.05); }
+  .toolbar-btn svg{ flex-shrink:0; }
+
+  .import-option-btn{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap: 2px;
+    text-align:left;
+    width: 100%;
+    border: 1px solid var(--line);
+    background: var(--paper-card);
+    border-radius: 8px;
+    padding: 12px 14px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+  .import-option-btn:hover{ border-color: var(--verdigris); background: rgba(30,143,85,0.05); }
+  .import-option-btn.danger:hover{ border-color: var(--danger); background: rgba(255,97,97,0.05); }
+  .import-option-btn strong{ font-size: 13.5px; color: var(--ink); }
+  .import-option-btn span{ font-size: 12px; color: var(--ink-soft); }
 
   /* ---- Ledger table ---- */
   .ledger{
@@ -288,7 +327,7 @@
     font-weight: 600;
     padding: 12px 16px;
     border-bottom: 1px solid var(--line);
-    background: rgba(0,0,0,0.02);
+    background: rgba(255,255,255,0.04);
   }
   th.num, td.num{ text-align: right; }
   tbody td{
@@ -298,7 +337,7 @@
     vertical-align: middle;
   }
   tbody tr:last-child td{ border-bottom: none; }
-  tbody tr:hover{ background: rgba(75,107,98,0.05); }
+  tbody tr:hover{ background: rgba(30,143,85,0.05); }
 
   .item-name{ font-weight: 600; }
   .price-cell{ font-family: 'IBM Plex Mono', monospace; font-weight: 500; white-space: nowrap; }
@@ -310,7 +349,7 @@
     font-size: 11px;
     padding: 3px 9px;
     border-radius: 20px;
-    background: rgba(75,107,98,0.12);
+    background: rgba(30,143,85,0.12);
     color: var(--verdigris);
     letter-spacing: 0.02em;
   }
@@ -319,7 +358,7 @@
     display:inline-flex;
     align-items:center;
     gap: 4px;
-    background: rgba(169,118,47,0.1);
+    background: rgba(51,193,122,0.1);
     border: none;
     color: var(--brass);
     font-family: 'IBM Plex Mono', monospace;
@@ -328,7 +367,7 @@
     border-radius: 20px;
     cursor: pointer;
   }
-  .files-btn:hover{ background: rgba(169,118,47,0.2); }
+  .files-btn:hover{ background: rgba(51,193,122,0.2); }
   .files-none{ color: var(--ink-soft); font-size: 12px; }
 
   .row-actions{ display:flex; align-items:center; gap: 2px; justify-content:flex-end; }
@@ -344,13 +383,13 @@
     align-items:center;
     justify-content:center;
   }
-  .edit-btn:hover{ color: var(--verdigris); background: rgba(75,107,98,0.1); }
+  .edit-btn:hover{ color: var(--verdigris); background: rgba(30,143,85,0.1); }
   .del-btn{ font-size: 16px; }
-  .del-btn:hover{ color: var(--danger); background: rgba(166,67,47,0.08); }
+  .del-btn:hover{ color: var(--danger); background: rgba(255,97,97,0.08); }
 
   .panel.editing{
     border-color: var(--verdigris);
-    box-shadow: 0 0 0 3px rgba(75,107,98,0.08);
+    box-shadow: 0 0 0 3px rgba(30,143,85,0.08);
   }
   .editing-tag{
     display:none;
@@ -361,7 +400,7 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--verdigris);
-    background: rgba(75,107,98,0.1);
+    background: rgba(30,143,85,0.1);
     padding: 4px 10px;
     border-radius: 20px;
     margin-left: 10px;
@@ -382,7 +421,61 @@
     display:none;
   }
   .cancel-edit-btn.show{ display:inline-flex; }
-  .cancel-edit-btn:hover{ background: rgba(0,0,0,0.03); }
+  .cancel-edit-btn:hover{ background: rgba(255,255,255,0.05); }
+
+  /* ---- Backup & restore ---- */
+  .backup-note{
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: -8px 0 14px;
+    line-height: 1.5;
+  }
+  .backup-actions{
+    display:flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .backup-btn{
+    background: var(--paper-card);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-family:'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 9px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+    display:inline-flex;
+    align-items:center;
+    gap: 7px;
+  }
+  .backup-btn:hover{ border-color: var(--verdigris); color: var(--verdigris); }
+  .backup-status{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .restore-choice{
+    display:flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+  .restore-choice button{
+    font-family:'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 9px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+    border: none;
+  }
+  .restore-choice .merge-btn{ background: var(--verdigris); color: #fff; }
+  .restore-choice .merge-btn:hover{ background: #156B3F; }
+  .restore-choice .replace-btn{ background: var(--paper-card); border: 1px solid var(--danger); color: var(--danger); }
+  .restore-choice .replace-btn:hover{ background: rgba(255,97,97,0.06); }
+  .restore-note{ font-size: 12px; color: var(--ink-soft); margin-top: 12px; line-height: 1.5; }
 
   .empty-state{
     padding: 48px 24px;
@@ -407,7 +500,7 @@
   /* ---- Attachment modal ---- */
   .modal-overlay{
     position: fixed; inset: 0;
-    background: rgba(23,26,30,0.55);
+    background: rgba(3,5,4,0.7);
     display: none;
     align-items: center;
     justify-content: center;
@@ -493,8 +586,8 @@
     bottom: 16px;
     max-width: 640px;
     margin: 0 auto;
-    background: linear-gradient(155deg, #2B3038 0%, #1C2025 100%);
-    color: #F1EEE4;
+    background: linear-gradient(155deg, #16211A 0%, #070A08 100%);
+    color: var(--ink);
     border-radius: 12px;
     padding: 14px 14px 14px 16px;
     display: none;
@@ -509,7 +602,7 @@
   .install-banner-icon{
     width: 36px; height: 36px;
     border-radius: 8px;
-    background: rgba(201,160,99,0.15);
+    background: rgba(143,239,192,0.15);
     color: var(--brass-light);
     display:flex; align-items:center; justify-content:center;
     flex-shrink:0;
@@ -522,10 +615,10 @@
     min-width: 0;
   }
   .install-banner-text strong{ font-size: 13.5px; font-weight:600; }
-  .install-banner-text span{ font-size: 12.5px; color: rgba(241,238,228,0.65); line-height:1.4; }
+  .install-banner-text span{ font-size: 12.5px; color: rgba(233,245,238,0.65); line-height:1.4; }
   .install-btn{
     background: var(--brass-light);
-    color: #1C2025;
+    color: #04120A;
     border: none;
     font-family:'Inter', sans-serif;
     font-weight: 700;
@@ -535,18 +628,18 @@
     cursor: pointer;
     white-space: nowrap;
   }
-  .install-btn:hover{ background: #dcb87a; }
+  .install-btn:hover{ background: #6BE3A6; }
   .install-dismiss{
     background: none;
     border: none;
-    color: rgba(241,238,228,0.55);
+    color: rgba(233,245,238,0.55);
     font-size: 18px;
     line-height:1;
     cursor: pointer;
     padding: 4px 6px;
     flex-shrink:0;
   }
-  .install-dismiss:hover{ color: #F1EEE4; }
+  .install-dismiss:hover{ color: var(--ink); }
 
   @media (max-width: 480px){
     .install-banner-text span{ display:none; }
@@ -578,7 +671,7 @@
   <div class="nameplate">
     <div class="nameplate-top">
       <div>
-        <p class="nameplate-eyebrow">Model No. HL-01 · Personal Asset Log</p>
+        <p class="nameplate-eyebrow">Personal Asset Log</p>
         <h1>Household Ledger</h1>
       </div>
       <div class="rivets">
@@ -586,10 +679,6 @@
       </div>
     </div>
     <div class="nameplate-stats">
-      <div class="stat">
-        <div class="stat-label">Total value</div>
-        <div class="stat-value brass" id="statTotal">$0</div>
-      </div>
       <div class="stat">
         <div class="stat-label">Items logged</div>
         <div class="stat-value" id="statCount">0</div>
@@ -662,20 +751,34 @@
   </div>
 
   <div class="controls">
-    <div class="field">
-      <label for="filterCategory">Filter</label>
-      <select id="filterCategory">
-        <option value="">All categories</option>
-      </select>
+    <div class="controls-left">
+      <div class="field">
+        <label for="filterCategory">Filter</label>
+        <select id="filterCategory">
+          <option value="">All categories</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="sortOrder">Sort</label>
+        <select id="sortOrder">
+          <option value="date-desc">Newest first</option>
+          <option value="date-asc">Oldest first</option>
+          <option value="price-desc">Price: high to low</option>
+          <option value="price-asc">Price: low to high</option>
+        </select>
+      </div>
     </div>
-    <div class="field">
-      <label for="sortOrder">Sort</label>
-      <select id="sortOrder">
-        <option value="date-desc">Newest first</option>
-        <option value="date-asc">Oldest first</option>
-        <option value="price-desc">Price: high to low</option>
-        <option value="price-asc">Price: low to high</option>
-      </select>
+    <div class="controls-right">
+      <span class="backup-status" id="backupStatus"></span>
+      <button type="button" class="toolbar-btn" id="exportBtn" title="Download a backup file">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export
+      </button>
+      <button type="button" class="toolbar-btn" id="importBtn" title="Restore from a backup file">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Import
+      </button>
+      <input type="file" id="importFileInput" accept="application/json" style="display:none;">
     </div>
   </div>
 
@@ -699,7 +802,21 @@
     </div>
   </div>
 
-  <footer>Stored only in this browser, including uploaded files. Clearing site data will erase your log. Large receipt files may hit the browser's storage limit.</footer>
+  <footer>Stored only in this browser, including uploaded files. Clearing site data will erase your log. Large receipt files may hit the browser's storage limit. Use Export regularly to keep a backup elsewhere.</footer>
+</div>
+
+<div class="modal-overlay" id="backupModalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Restore backup</h3>
+      <button class="modal-close" id="backupModalClose">×</button>
+    </div>
+    <p class="backup-note" id="backupNote">This file contains purchases and attachments.</p>
+    <div class="restore-choice">
+      <button type="button" class="merge-btn" id="mergeBtn">Merge with current log</button>
+      <button type="button" class="replace-btn" id="replaceBtn">Replace everything</button>
+    </div>
+  </div>
 </div>
 
 <div class="modal-overlay" id="modalOverlay">
@@ -769,6 +886,15 @@
   const cancelEditBtn = document.getElementById('cancelEditBtn');
   const entryPanel = document.getElementById('entryPanel');
   const modalOverlay = document.getElementById('modalOverlay');
+  const exportBtn = document.getElementById('exportBtn');
+  const importBtn = document.getElementById('importBtn');
+  const importFileInput = document.getElementById('importFileInput');
+  const backupModalOverlay = document.getElementById('backupModalOverlay');
+  const backupModalClose = document.getElementById('backupModalClose');
+  const backupNote = document.getElementById('backupNote');
+  const mergeBtn = document.getElementById('mergeBtn');
+  const replaceBtn = document.getElementById('replaceBtn');
+  const backupStatus = document.getElementById('backupStatus');
   const modalBody = document.getElementById('modalBody');
   const modalTitle = document.getElementById('modalTitle');
   const modalClose = document.getElementById('modalClose');
@@ -887,18 +1013,6 @@
   }
 
   function computeStats(list){
-    const totalsByCurrency = {};
-    list.forEach(p => {
-      const cur = p.currency || 'USD';
-      totalsByCurrency[cur] = (totalsByCurrency[cur] || 0) + Number(p.price || 0);
-    });
-    const totalEl = document.getElementById('statTotal');
-    const currencies = Object.keys(totalsByCurrency);
-    if(currencies.length === 0){
-      totalEl.innerHTML = '<span class="cur-part">$0</span>';
-    } else {
-      totalEl.innerHTML = currencies.map(cur => `<span class="cur-part">${fmtMoney(totalsByCurrency[cur], cur)}</span>`).join('');
-    }
     document.getElementById('statCount').textContent = list.length;
     const cats = new Set(list.map(p => p.category).filter(Boolean));
     document.getElementById('statCats').textContent = cats.size;
@@ -1089,6 +1203,143 @@
   sortOrder.addEventListener('change', render);
 
   render();
+
+  /* ---- Export / import backup ---- */
+  const LAST_BACKUP_KEY = 'household-ledger-last-backup';
+
+  function fmtBackupTimestamp(iso){
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined, {year:'numeric', month:'short', day:'numeric'}) +
+      ' · ' + d.toLocaleTimeString(undefined, {hour:'numeric', minute:'2-digit'});
+  }
+
+  function refreshBackupStatus(){
+    const last = localStorage.getItem(LAST_BACKUP_KEY);
+    backupStatus.textContent = last ? `Last backup: ${fmtBackupTimestamp(last)}` : '';
+  }
+  refreshBackupStatus();
+
+  function exportBackup(){
+    const payload = {
+      app: 'household-ledger',
+      version: 2,
+      exportedAt: new Date().toISOString(),
+      purchases
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = new Date().toISOString().slice(0,10);
+    a.href = url;
+    a.download = `household-ledger-backup-${stamp}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+
+    try{ localStorage.setItem(LAST_BACKUP_KEY, new Date().toISOString()); }catch(e){}
+    refreshBackupStatus();
+  }
+
+  exportBtn.addEventListener('click', exportBackup);
+  importBtn.addEventListener('click', () => importFileInput.click());
+
+  function sanitizeImportedPurchase(raw){
+    if(!raw || typeof raw !== 'object') return null;
+    if(!raw.item || !raw.date) return null;
+    return {
+      id: typeof raw.id === 'string' ? raw.id : uid(),
+      item: String(raw.item).trim(),
+      price: Number(raw.price) || 0,
+      currency: raw.currency || 'USD',
+      date: raw.date,
+      category: raw.category ? String(raw.category).trim() : '',
+      files: Array.isArray(raw.files)
+        ? raw.files
+            .filter(f => f && typeof f.dataUrl === 'string')
+            .map(f => ({
+              id: typeof f.id === 'string' ? f.id : uid(),
+              name: f.name || 'attachment',
+              type: f.type || '',
+              dataUrl: f.dataUrl
+            }))
+        : []
+    };
+  }
+
+  let pendingImport = null;
+
+  importFileInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    importFileInput.value = '';
+    if(!file) return;
+
+    let parsed;
+    try{
+      const text = await file.text();
+      parsed = JSON.parse(text);
+    }catch(err){
+      alert('That file could not be read as a backup — make sure it\'s an unmodified export from this app.');
+      return;
+    }
+
+    const rawList = Array.isArray(parsed) ? parsed : parsed.purchases;
+    if(!Array.isArray(rawList)){
+      alert('This doesn\'t look like a Household Ledger backup file.');
+      return;
+    }
+
+    const cleaned = rawList.map(sanitizeImportedPurchase).filter(Boolean);
+    if(cleaned.length === 0){
+      alert('No valid purchases were found in that file.');
+      return;
+    }
+
+    pendingImport = cleaned;
+
+    if(purchases.length === 0){
+      // nothing to conflict with — import straight away
+      applyImport('replace');
+      return;
+    }
+
+    const fileCount = cleaned.reduce((n, p) => n + (p.files ? p.files.length : 0), 0);
+    backupNote.textContent = `This file has ${cleaned.length} purchase${cleaned.length === 1 ? '' : 's'}` +
+      (fileCount ? ` and ${fileCount} attached file${fileCount === 1 ? '' : 's'}` : '') +
+      `. Your current log has ${purchases.length} purchase${purchases.length === 1 ? '' : 's'}. How should this be applied?`;
+    backupModalOverlay.classList.add('open');
+  });
+
+  function applyImport(mode){
+    if(!pendingImport) return;
+
+    if(mode === 'merge'){
+      const existingIds = new Set(purchases.map(p => p.id));
+      const toAdd = pendingImport.map(p => existingIds.has(p.id) ? { ...p, id: uid() } : p);
+      purchases = purchases.concat(toAdd);
+    } else {
+      purchases = pendingImport.slice();
+    }
+
+    const ok = savePurchases(purchases);
+    pendingImport = null;
+    backupModalOverlay.classList.remove('open');
+
+    if(!ok){
+      alert('The imported data was too large to fit in this browser\'s storage. Try importing fewer items or attachments at a time.');
+      purchases = loadPurchases();
+    }
+
+    exitEditMode();
+    render();
+  }
+
+  mergeBtn.addEventListener('click', () => applyImport('merge'));
+  replaceBtn.addEventListener('click', () => applyImport('replace'));
+  backupModalClose.addEventListener('click', () => { pendingImport = null; backupModalOverlay.classList.remove('open'); });
+  backupModalOverlay.addEventListener('click', (e) => {
+    if(e.target === backupModalOverlay){ pendingImport = null; backupModalOverlay.classList.remove('open'); }
+  });
 
   /* ---- Install as app ---- */
   const INSTALL_DISMISS_KEY = 'household-ledger-install-dismissed';
